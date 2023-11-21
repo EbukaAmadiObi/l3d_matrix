@@ -4,6 +4,7 @@
 
 # importing required libraries
 from tkinter import * 
+import tkinter.font as font
 from matplotlib.figure import Figure 
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
 NavigationToolbar2Tk) 
@@ -30,18 +31,20 @@ plot.set_ylabel("Y")
 plot.set_zlabel("Z")
 
 # Create dot matrix
-x = np.array([])
-y = np.array([])
-z = np.array([])
+x_list = np.array([])
+y_list = np.array([])
+z_list = np.array([])
+col = {}
 for i in range(8):
     for j in range(8):
         for k in range(8):
-            x=np.append(x,i)
-            y=np.append(y,j)
-            z=np.append(z,k)
+            x_list=np.append(x_list,i)
+            y_list=np.append(y_list,j)
+            z_list=np.append(z_list,k)
+            col[(i,j,k)] = "grey"
 
 # Plotting
-plot.scatter3D(x, y, z, color='grey', alpha=0.2)
+plot.scatter3D(x_list, y_list, z_list, color=[*col.values()], alpha=0.75)
 
 # creating the Tkinter canvas 
 # containing the Matplotlib figure 
@@ -49,10 +52,7 @@ canvas = FigureCanvasTkAgg(fig, master = window)
 canvas.draw() 
 
 # placing the canvas on the Tkinter window 
-canvas.get_tk_widget().pack() 
-
-# placing the toolbar on the Tkinter window 
-canvas.get_tk_widget().pack() 
+canvas.get_tk_widget().grid(row=0,rowspan=128,column=0,padx=10,pady=10) 
 
 # button that closes the window
 close_button = Button(master = window,  
@@ -61,33 +61,63 @@ close_button = Button(master = window,
                      width = 10, 
                      text = "Close")
 
-close_button.pack()
-
-newWindow = Toplevel(window)
- 
-# sets the title of the buttons
-newWindow.title("Draw")
-
-# sets the geometry of toplevel
-newWindow.geometry("1000x200")
+close_button.grid(row=128,column=0,padx=10,pady=10)
 
 # Create buttons that change the colour of a dot
-light = [[0 for x in range(8)] for x in range(8)]
+light = [[[0 for x in range(8)] for x in range(8)] for x in range(8)]
 
-def changeColour(x,y,z):
-    print(x,y,z)
-    plot.scatter3D(x,y,z, color='blue', alpha=0.75)
-    canvas.draw() 
+# Function to change colour of dot
+def changeColour(x1,y1,z1):
+    if col[(x1,y1,z1)] == "red":
+        col[(x1,y1,z1)] = "grey"
+        light[x1][y1][z1].configure(bg="grey")
+    else:
+        col[(x1,y1,z1)] = "red"
+        light[x1][y1][z1].configure(bg="red")
 
+    plot.cla()
+    plot.scatter3D(x_list, y_list, z_list, color=[*col.values()], alpha=0.75)
+    canvas.draw()
+
+    print("x: ",x1," y: ",y1," z: ",z1," colour: ",col[(x1,y1,z1)])
+
+# Create drawing buttons
+myFont = font.Font(size=1)
 for z in range(8):
     for x in range(8):
         for y in range(8):
-            light[x][y] = Button(newWindow,bg="black",height=1,width=1)
-            light[x][y].configure(command=lambda x1=x, y1=y, z1=z: changeColour(x1,y1,z1))
+
+            # Create button
+            light[x][y][z] = Button(window,bg="grey",height=5,width=3)
+
+            # Configure button
+            light[x][y][z].configure(command=lambda x1=x, y1=y, z1=z: changeColour(x1,y1,z1))
+
+            # Position button
+            posx = x+(z*8)+1
+            posy = abs(y-7)
+            bufx = (0,0)
+            bufy = (0,0)
+            if x == 0:
+                bufx = (8,0)
+
             if x == 7:
-                light[x][y].grid(column=x+(z*8),row=abs(y-7),padx=(0,4),pady=0)
-            else:
-                light[x][y].grid(column=x+(z*8),row=abs(y-7),padx=0,pady=0)
+                bufx = (0,8)
+            
+            if y == 0:
+                bufy = (0,8)
+
+            if y == 7:
+                bufy = (8,0)
+            
+            if z>3:
+                posx -=32
+                posy = abs(y-7)+8
+
+
+            light[x][y][z].grid(column=posx,row=posy,padx=bufx,pady=bufy)
+
+            light[x][y][z]['font'] = myFont
 
 # run the gui 
 window.mainloop() 

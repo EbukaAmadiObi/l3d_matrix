@@ -10,53 +10,64 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk) 
 import matplotlib.pyplot as plt
 import numpy as np
-import csv
 
-# --------------------------------- Functions -------------------------------- #
+# --------------------------------- Classes & Functions -------------------------------- #
+class Frame:
+    def __init__(self,values=None):
+        global anim
+        global frames
+        if values is None:
+            values = {}
+            for i in range(8):
+                for j in range(8):
+                    for k in range(8):
+                        values[(i,j,k)] = "grey"
+        self.values = values
 
 # Add a frame to the animation
 def add_frame():
     global anim
     global frames
-    # Create dot matrix
-    x_list = np.array([])
-    y_list = np.array([])
-    z_list = np.array([])
-    col = {}
-    for i in range(8):
-        for j in range(8):
-            for k in range(8):
-                x_list=np.append(x_list,i)
-                y_list=np.append(y_list,j)
-                z_list=np.append(z_list,k)
-                col[(i,j,k)] = "grey"
-    anim.append(col)
+    global current_frame
+
+    # Create frame
+    frame = Frame()
+    
+    #add to animation
+    anim.append(frame.values)
+
+    #Update slider range
     frames +=1
     slider.configure(from_=0, to=frames-1)
 
+    #move to new frame
     current_frame = frames-1
     slider.set(frames-1)
-    plot.cla()
-    draw_frame(anim[current_frame],plot)
-    canvas.draw()
+
+    refresh()
     
 
-# Draw frame on plot
+# Draw frame on matplotlib plot
 def draw_frame(frame,plot):
-    #variable to index through frame array to set light colours
+    global x_list
+    global y_list
+    global z_list
+
+    colour_list=[*frame.values()]
+
+    plot.scatter3D(x_list, y_list, z_list, color=colour_list, alpha=0.75)
+
+    #update button coloursgu
     h=0
-    x_list = np.array([])
-    y_list = np.array([])
-    z_list = np.array([])
     for i in range(8):
         for j in range(8):
             for k in range(8):
-                x_list=np.append(x_list,i)
-                y_list=np.append(y_list,j)
-                z_list=np.append(z_list,k)
+                light_buttons[i][j][k].configure(bg=colour_list[h])
+                h+=1
 
-    plot.scatter3D(x_list, y_list, z_list, color=[*frame.values()], alpha=0.75)
 
+
+# Change brush colours
 def changeBrushRed():
     global brush
     brush = "red"
@@ -73,6 +84,8 @@ def changeBrushBlue():
 def changeColour(frame, x1,y1,z1):
     global light_buttons
     global plot
+
+    #if button is already desired colour, set to white
     if frame[(x1,y1,z1)] == brush:
         frame[(x1,y1,z1)] = "grey"
         light_buttons[x1][y1][z1].configure(bg="white")
@@ -80,9 +93,7 @@ def changeColour(frame, x1,y1,z1):
         frame[(x1,y1,z1)] = brush
         light_buttons[x1][y1][z1].configure(bg=brush)
 
-    plot.cla()
-    draw_frame(frame,plot)
-    canvas.draw()
+    refresh()
 
     print("x: ",x1," y: ",y1," z: ",z1," colour: ",frame[(x1,y1,z1)])
 
@@ -92,6 +103,9 @@ def move_frame(event):
     global plot
     current_frame = slider.get()
 
+    refresh()
+
+def refresh():
     plot.cla()
     draw_frame(anim[current_frame],plot)
     canvas.draw()
@@ -102,7 +116,18 @@ current_frame = 0
 brush = "red"
 # Create buttons that change the colour of a dot
 light_buttons = [[[0 for x in range(8)] for x in range(8)] for x in range(8)]
+light_button_colours = [[["white" for x in range(8)] for x in range(8)] for x in range(8)]
 anim = []
+
+x_list = np.array([])
+y_list = np.array([])
+z_list = np.array([])
+for i in range(8):
+    for j in range(8):
+        for k in range(8):
+            x_list=np.append(x_list,i)
+            y_list=np.append(y_list,j)
+            z_list=np.append(z_list,k)
 
 # ----------------------------------- Build UI ---------------------------------- #
 # The main Tkinter window 
@@ -208,32 +233,6 @@ brush_button_blue.grid(row=17,column=15,columnspan=7,padx=10,pady=10)
 #Start blank animation
 add_frame()
 draw_frame(anim[0],plot)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # run the gui 
 window.mainloop() 

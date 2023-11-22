@@ -173,7 +173,7 @@ slider.grid(row=18,column=2,columnspan=10)
 add_frame_font = font.Font(size=5)
 add_frame_button = Button(window, height = 10, width = 10, text = "Add Frame")
 add_frame_button.configure(command=add_frame)
-add_frame_button.grid(row=18,column=11)
+add_frame_button.grid(row=18,column=11,columnspan=6)
 
 add_frame_button['font'] = add_frame_font
 
@@ -218,15 +218,17 @@ for z in range(8):
 # brush colour buttons
 brush_button_red = Button(master = window, height = 10, width = 10, text = "Red", bg ="red")
 brush_button_red.configure(command=changeBrushRed)
-brush_button_red.grid(row=17,column=1,columnspan=7,padx=10,pady=10)
+brush_button_red.grid(row=17,column=1,columnspan=8,padx=10,pady=10)
 
 brush_button_green = Button(master = window, height = 10, width = 10, text = "Green", bg ="green")
 brush_button_green.configure(command=changeBrushGreen)
-brush_button_green.grid(row=17,column=8,columnspan=7,padx=10,pady=10)
+brush_button_green.grid(row=17,column=9,columnspan=8,padx=10,pady=10)
 
 brush_button_blue = Button(master = window, height = 10, width = 10, text = "Blue", bg ="blue")
 brush_button_blue.configure(command=changeBrushBlue)
-brush_button_blue.grid(row=17,column=15,columnspan=7,padx=10,pady=10)
+brush_button_blue.grid(row=17,column=17,columnspan=8,padx=10,pady=10)
+
+
 
 # ------------------------------ Start Animation ----------------------------- #
 

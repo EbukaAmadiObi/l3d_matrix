@@ -1,7 +1,6 @@
 
 
 //Pin connected to ST_CP of 74HC595
-int latchPiny = 12;
 int latchPinx = 8;
 //Pin connected to SH_CP of 74HC595
 int clockPin = 11;
@@ -12,7 +11,6 @@ int dataPinx = 9;
 
 void setup() {
   //set pins to output because they are addressed in the main loop
-  pinMode(latchPiny, OUTPUT);
   pinMode(latchPinx, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPinx, OUTPUT);
@@ -86,14 +84,14 @@ void loop() {
 }
 
 void push(){
-  digitalWrite(latchPiny, LOW);
+  digitalWrite(latchPinx, LOW);
   //transmit data
   shiftOut(dataPiny, clockPin, LSBFIRST, x);
   shiftOut(dataPiny, clockPin, MSBFIRST, y);
 
   //return the latch pin high to signal chip that it
   //no longer needs to listen for information
-  digitalWrite(latchPiny, HIGH);
+  digitalWrite(latchPinx, HIGH);
   delay(100);
 }
 void light(int x_c,int y_c){

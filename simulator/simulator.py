@@ -30,15 +30,12 @@ def add_frame():
     global anim
     global frames
     global current_frame
-    global button_light_anim
 
     # Create frame
     frame = Frame()
-    button_light_frame = Frame()
     
     #add to animation
     anim.append(frame.values)
-    button_light_anim.append(button_light_frame.values)
 
     #Update slider range
     frames +=1
@@ -150,13 +147,10 @@ def changeColour(event):
     else:
         frame[(x1,abs(y1-7),z1)] = brush
         if brush=="grey":
-            button_canvas.itemconfig(light_squares[x1][abs(y1)][z1], fill="white")
+            button_canvas.itemconfig(light_squares[x1][abs(y1)][z1], fill="grey")
         else:
             button_canvas.itemconfig(light_squares[x1][abs(y1)][z1], fill=brush)
 
-    refresh()
-
-   # print("x: ",x1," y: ",y1," z: ",z1," colour: ",frame[(x1,y1,z1)])
     print("x: ",x1," y: ",y1,"z: ",z1)
     return
 
@@ -167,19 +161,11 @@ def move_frame(event):
     current_frame = slider.get()
 
     refresh()
-    refresh_buttons()
 
 def refresh():
     plot.cla()
     draw_frame(anim[current_frame],plot)
     canvas.draw()
-
-def refresh_buttons():
-    for x in range(8):
-        for y in range(8):
-            for z in range(8):
-                button_canvas.itemconfig(light_squares[x][abs(y-7)][z], fill=colour_list[h])
-                h+=1
 
 
 # ----------------------------- Global Variables ----------------------------- #
@@ -262,8 +248,6 @@ for x in range(8):
     for y in range(8):
         for z in range(8):
             light_squares[x][y][z] = button_canvas.create_rectangle(x*15+((z%4)*9*15),y*15+(int(z/4)*9*15),x*15+15+((z%4)*9*15),y*15+15+(int(z/4)*9*15))
-
-
 
 # brush colour buttons
 brush_button_red = Button(master = window, height = 10, width = 10, text = "Red", bg ="red")
